@@ -1,0 +1,806 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unified System Analysis Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
+            color: #2c3e50;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(252, 136, 102, 0.3) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .main-container {
+            max-width: 100%;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 30px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+            animation: fadeIn 0.6s ease-out;
+            max-width: 1600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        h1 {
+            font-size: 42px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .info-banner {
+            background: linear-gradient(135deg, #e8f4f8 0%, #f0f8ff 100%);
+            border-left: 5px solid #667eea;
+            padding: 20px 25px;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+            max-width: 1600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .info-banner p {
+            margin: 8px 0;
+            color: #2c3e50;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .section-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+            animation: fadeIn 0.6s ease-out;
+            max-width: 100%;
+            overflow: visible;
+        }
+        .section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .section-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        .section-header:hover::before {
+            left: 100%;
+        }
+        .section-header:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        .section-header:active {
+            transform: translateY(0);
+        }
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+        }
+        .section-toggle {
+            font-size: 24px;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+        .section-toggle.collapsed {
+            transform: rotate(-90deg);
+        }
+        .section-content {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+            overflow-x: auto;
+            width: 100%;
+        }
+        .section-content.collapsed {
+            display: none;
+        }
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            padding: 20px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        /* Quick Navigation Menu */
+        .nav-toggle {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .nav-toggle:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .nav-menu {
+            position: fixed;
+            bottom: 160px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            max-width: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+            z-index: 1001;
+            opacity: 0;
+            transform: translateY(20px) scale(0.9);
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .nav-menu.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+        .nav-menu h3 {
+            margin: 0 0 15px 0;
+            font-size: 18px;
+            color: #2c3e50;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .nav-menu a {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            margin: 5px 0;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #2c3e50;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: rgba(102, 126, 234, 0.05);
+        }
+        .nav-menu a:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateX(5px);
+        }
+        .nav-menu a span {
+            margin-right: 8px;
+        }
+        /* Global font override for consistency across all sections */
+        .section-content,
+        .section-content *,
+        .section-content body,
+        .section-content table,
+        .section-content th,
+        .section-content td,
+        .section-content p,
+        .section-content div,
+        .section-content span,
+        .section-content h1,
+        .section-content h2,
+        .section-content h3,
+        .section-content h4,
+        .section-content h5,
+        .section-content h6 {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
+        }
+        /* Ensure Plotly graphs use consistent font */
+        .section-content .plotly .gtitle,
+        .section-content .plotly text,
+        .section-content svg text {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
+        }
+        /* Ensure images and canvases are responsive */
+        .section-container img {
+            max-width: 100%;
+            height: auto;
+        }
+        .section-container canvas {
+            max-width: 100% !important;
+        }
+        /* Override nested container styles */
+        .section-container .container {
+            max-width: 100%;
+            background: transparent;
+            padding: 0;
+            box-shadow: none;
+        }
+        /* Ensure embedded content maintains proper sizing */
+        .section-content > div {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        /* Export button styling */
+        .export-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .export-btn:active {
+            transform: translateY(0);
+        }
+        .table-wrapper {
+            position: relative;
+            margin: 20px 0;
+        }
+        .table-controls {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>📊 Unified System Analysis Dashboard</h1>
+            <p class="subtitle">Comprehensive System Diagnostics & Performance Analysis</p>
+            <p class="subtitle" style="margin-top: 5px; font-size: 14px;">Generated on 2026-05-06 12:42:37</p>
+        </div>
+
+        <div class="info-banner">
+            <p><strong>📋 Dashboard Overview:</strong> This unified dashboard combines data from 2 analysis modules.</p>
+            <p><strong>🔍 Navigation:</strong> Scroll through sections below or use the quick navigation menu (📑 button). Click section headers to collapse/expand.</p>
+            <p><strong>💾 Export:</strong> Click "Export CSV" buttons above tables to download data.</p>
+        </div>
+
+        <!-- Quick Navigation Menu -->
+        <button class="nav-toggle" onclick="toggleNavMenu()" title="Quick Navigation">
+            📑
+        </button>
+        <div class="nav-menu" id="navMenu">
+            <h3>📑 Quick Navigation</h3>
+
+            <a href="#section-container-0" onclick="closeNavMenu(); return true;"><span>📋</span>Executive Summary</a>
+            <a href="#section-container-1" onclick="closeNavMenu(); return true;"><span>📈</span>FP DTOB Analysis</a>
+        </div>
+
+        <div class="section-container" id="section-container-0">
+            <div class="section-header" onclick="toggleSection('section-0')">
+                <h2 class="section-title">📋 Executive Summary</h2>
+                <span class="section-toggle " id="toggle-0">▼</span>
+            </div>
+            <div class="section-content " id="section-0">
+                
+    <style>
+        .summary-container {
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        .summary-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .summary-header h2 {
+            color: #2C3E50;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .summary-header p {
+            color: #7F8C8D;
+            font-size: 16px;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .summary-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        .summary-card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #2C3E50;
+        }
+        .summary-card-icon {
+            font-size: 24px;
+        }
+        .summary-metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ECF0F1;
+        }
+        .summary-metric:last-child {
+            border-bottom: none;
+        }
+        .summary-metric-label {
+            color: #7F8C8D;
+            font-size: 14px;
+        }
+        .summary-metric-value {
+            color: #2C3E50;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .alert-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .alert-high {
+            background: #e74c3c;
+            color: white;
+        }
+        .alert-medium {
+            background: #f39c12;
+            color: white;
+        }
+        .alert-low {
+            background: #27ae60;
+            color: white;
+        }
+    </style>
+    <div class="summary-container">
+        <div class="summary-header">
+            <h2>📊 System Analysis Summary Report</h2>
+            <p>Generated on 2026-05-06 12:42:37</p>
+        </div>
+        <div class="summary-grid">
+    
+            <div class="summary-card">
+                <div class="summary-card-title">
+                    <span class="summary-card-icon">📈</span>
+                    <span>FP DTOB Analysis</span>
+                </div>
+                <div class="summary-metric">
+                    <span class="summary-metric-label">Status</span>
+                    <span class="summary-metric-value">✓ Traffic Metrics Available</span>
+                </div>
+            </div>
+            
+        </div>
+        <div style="text-align: center; color: #7F8C8D; font-size: 14px; margin-top: 20px;">
+            <p>💡 Click on any section header below to view detailed analysis</p>
+        </div>
+    </div>
+    
+            </div>
+        </div>
+
+        <div class="section-container" id="section-container-1">
+            <div class="section-header" onclick="toggleSection('section-1')">
+                <h2 class="section-title">📈 FP DTOB Analysis</h2>
+                <span class="section-toggle collapsed" id="toggle-1">▼</span>
+            </div>
+            <div class="section-content collapsed" id="section-1">
+                <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #FFFFFF;
+            color: #2C3E50;
+        }
+        .dashboard {
+            padding: 24px 24px 28px;
+        }
+        .table-title {
+            margin: 16px 0 12px;
+            font-size: 21px;
+            font-weight: 700;
+            color: #1F2D3D;
+        }
+        .table-card {
+            border: 1px solid #D9E2EC;
+            border-radius: 12px;
+            background: linear-gradient(180deg, #FBFCFE 0%, #F7FAFD 100%);
+            padding: 12px;
+            box-shadow: 0 2px 10px rgba(31, 45, 61, 0.06);
+        }
+        .table-scroll {
+            max-height: 360px;
+            overflow-y: auto;
+            overflow-x: auto;
+            background: #FFFFFF;
+            border: 1px solid #B8C7D9;
+            border-radius: 8px;
+        }
+        .table-scroll::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        .table-scroll::-webkit-scrollbar-thumb {
+            background: #C7D3E0;
+            border-radius: 8px;
+        }
+        .table-scroll::-webkit-scrollbar-track {
+            background: #F1F5F9;
+            border-radius: 8px;
+        }
+        table.fpdtob-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 12px;
+            border: 1px solid #C6D3E1;
+        }
+        .fpdtob-table th, .fpdtob-table td {
+            border-bottom: 1px solid #D7E1EC;
+            border-right: 1px solid #D7E1EC;
+            padding: 8px 10px;
+            text-align: left;
+            white-space: nowrap;
+        }
+        .fpdtob-table th:last-child,
+        .fpdtob-table td:last-child {
+            border-right: 0;
+        }
+        .fpdtob-table th {
+            position: sticky;
+            top: 0;
+            background-color: #DCE9F7;
+            z-index: 2;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            font-size: 11px;
+            color: #334E68;
+            border-bottom: 2px solid #AFC3D8;
+        }
+        .fpdtob-table tbody tr:nth-child(even) {
+            background: #FAFCFE;
+        }
+        .fpdtob-table tbody tr:hover {
+            background: #EEF5FD;
+        }
+        .fpdtob-table td:nth-child(n+2) {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            color: #1F3A5A;
+        }
+        .empty-msg {
+            margin: 8px;
+            color: #52667A;
+        }
+    </style>
+
+    <div class="dashboard">
+        <div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.0.1.min.js" integrity="sha256-oy6Be7Eh6eiQFs5M7oXuPxxm9qbJXEtTpfSI93dW16Q=" crossorigin="anonymous"></script>                <div id="85978b84-de46-4045-b642-597bb90d0cdd" class="plotly-graph-div" style="height:300px; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("85978b84-de46-4045-b642-597bb90d0cdd")) {                    Plotly.newPlot(                        "85978b84-de46-4045-b642-597bb90d0cdd",                        [],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"xaxis":{"anchor":"y","domain":[0.0,0.45]},"yaxis":{"anchor":"x","domain":[0.0,1.0]},"xaxis2":{"anchor":"y2","domain":[0.55,1.0]},"yaxis2":{"anchor":"x2","domain":[0.0,1.0]},"margin":{"l":80,"r":80,"t":165,"b":130},"title":{"font":{"size":24,"color":"#2C3E50","family":"Arial Black, sans-serif"},"pad":{"t":8,"b":8},"text":"\u003cb\u003eFPDTOB Performance Metrics\u003c\u002fb\u003e\u003cbr\u003e\u003csub\u003evDCA to BIND Traffic Analysis\u003c\u002fsub\u003e","x":0.5,"xanchor":"center","y":0.99,"yanchor":"top"},"legend":{"title":{"font":{"size":14},"text":"\u003cb\u003eMetrics\u003c\u002fb\u003e"},"font":{"size":12},"orientation":"h","x":0.5,"y":-0.12,"xanchor":"center","yanchor":"top","bgcolor":"rgba(255, 255, 255, 0.95)","bordercolor":"#CCCCCC","borderwidth":1},"font":{"family":"'Segoe UI', Arial, Helvetica, sans-serif","size":13,"color":"#34495E"},"hoverlabel":{"font":{"size":12,"family":"Arial, sans-serif"},"bgcolor":"white"},"height":300,"plot_bgcolor":"#FAFAFA","paper_bgcolor":"#FFFFFF","showlegend":true,"hovermode":"x unified"},                        {"responsive": true}                    )                };            </script>        </div>
+        <h2 class="table-title">FPDTOB Scrollable Metrics Table</h2>
+        <div class="table-card">
+            <div class="table-scroll"><p class="empty-msg">No table data available.</p></div>
+        </div>
+    </div>
+
+<script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script><script></script><script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("85978b84-de46-4045-b642-597bb90d0cdd")) {                    Plotly.newPlot(                        "85978b84-de46-4045-b642-597bb90d0cdd",                        [],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"xaxis":{"anchor":"y","domain":[0.0,0.45]},"yaxis":{"anchor":"x","domain":[0.0,1.0]},"xaxis2":{"anchor":"y2","domain":[0.55,1.0]},"yaxis2":{"anchor":"x2","domain":[0.0,1.0]},"margin":{"l":80,"r":80,"t":165,"b":130},"title":{"font":{"size":24,"color":"#2C3E50","family":"Arial Black, sans-serif"},"pad":{"t":8,"b":8},"text":"\u003cb\u003eFPDTOB Performance Metrics\u003c\u002fb\u003e\u003cbr\u003e\u003csub\u003evDCA to BIND Traffic Analysis\u003c\u002fsub\u003e","x":0.5,"xanchor":"center","y":0.99,"yanchor":"top"},"legend":{"title":{"font":{"size":14},"text":"\u003cb\u003eMetrics\u003c\u002fb\u003e"},"font":{"size":12},"orientation":"h","x":0.5,"y":-0.12,"xanchor":"center","yanchor":"top","bgcolor":"rgba(255, 255, 255, 0.95)","bordercolor":"#CCCCCC","borderwidth":1},"font":{"family":"'Segoe UI', Arial, Helvetica, sans-serif","size":13,"color":"#34495E"},"hoverlabel":{"font":{"size":12,"family":"Arial, sans-serif"},"bgcolor":"white"},"height":300,"plot_bgcolor":"#FAFAFA","paper_bgcolor":"#FFFFFF","showlegend":true,"hovermode":"x unified"},                        {"responsive": true}                    )                };            </script>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🔧 System Analysis Dashboard | Generated from 2 analysis modules</p>
+        </div>
+    </div>
+
+    <script>
+        // Toggle section visibility
+        function toggleSection(sectionId) {
+            const content = document.getElementById(sectionId);
+            const toggleIcon = document.getElementById('toggle-' + sectionId.split('-')[1]);
+            
+            if (content.classList.contains('collapsed')) {
+                content.classList.remove('collapsed');
+                toggleIcon.classList.remove('collapsed');
+                
+                // Resize Plotly graphs when section is expanded
+                setTimeout(function() {
+                    const plotlyDivs = content.querySelectorAll('.plotly-graph-div');
+                    plotlyDivs.forEach(function(div) {
+                        if (window.Plotly) {
+                            window.Plotly.Plots.resize(div);
+                        }
+                    });
+                }, 100);
+            } else {
+                content.classList.add('collapsed');
+                toggleIcon.classList.add('collapsed');
+            }
+        }
+
+        // Toggle navigation menu
+        function toggleNavMenu() {
+            const navMenu = document.getElementById('navMenu');
+            navMenu.classList.toggle('active');
+        }
+
+        // Close navigation menu
+        function closeNavMenu() {
+            const navMenu = document.getElementById('navMenu');
+            navMenu.classList.remove('active');
+        }
+
+        // Close nav menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const navMenu = document.getElementById('navMenu');
+            const navToggle = document.querySelector('.nav-toggle');
+            if (!navMenu.contains(e.target) && !navToggle.contains(e.target)) {
+                closeNavMenu();
+            }
+        });
+
+        // Export table to CSV
+        function exportTableToCSV(tableId, filename) {
+            const table = document.getElementById(tableId);
+            if (!table) return;
+            
+            const rows = table.querySelectorAll('tr');
+            let csv = [];
+            
+            for (let row of rows) {
+                let cols = row.querySelectorAll('td, th');
+                let csvRow = [];
+                for (let col of cols) {
+                    // Get text content and clean it
+                    let text = col.textContent.trim();
+                    // Escape quotes and wrap in quotes if contains comma
+                    text = text.replace(/"/g, '""');
+                    if (text.includes(',') || text.includes('\n') || text.includes('"')) {
+                        text = '"' + text + '"';
+                    }
+                    csvRow.push(text);
+                }
+                csv.push(csvRow.join(','));
+            }
+            
+            // Create blob and download
+            const csvContent = csv.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Add export buttons to all tables
+        function addExportButtons() {
+            const tables = document.querySelectorAll('.section-content table');
+            let tableCounter = 0;
+            
+            tables.forEach((table, index) => {
+                // Skip if already has an ID
+                if (!table.id) {
+                    table.id = 'data-table-' + tableCounter;
+                }
+                const tableId = table.id;
+                tableCounter++;
+                
+                // Skip very small tables (likely not data tables)
+                const rows = table.querySelectorAll('tr');
+                if (rows.length < 2) return;
+                
+                // Create wrapper if not exists
+                if (!table.parentElement.classList.contains('table-wrapper')) {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'table-wrapper';
+                    table.parentNode.insertBefore(wrapper, table);
+                    wrapper.appendChild(table);
+                }
+                
+                // Check if export button already exists
+                const existingControls = table.parentElement.querySelector('.table-controls');
+                if (existingControls) return;
+                
+                // Create controls container
+                const controls = document.createElement('div');
+                controls.className = 'table-controls';
+                
+                // Create export button
+                const exportBtn = document.createElement('button');
+                exportBtn.className = 'export-btn';
+                exportBtn.innerHTML = '📥 Export CSV';
+                
+                // Get section title for filename
+                const section = table.closest('.section-content');
+                const sectionTitle = section ? section.previousElementSibling.querySelector('.section-title').textContent.trim() : 'table';
+                const filename = sectionTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_table_' + tableCounter + '.csv';
+                
+                exportBtn.onclick = () => exportTableToCSV(tableId, filename);
+                
+                controls.appendChild(exportBtn);
+                table.parentElement.insertBefore(controls, table);
+            });
+        }
+
+        // Initialize export buttons when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            addExportButtons();
+        });
+
+        // Re-add export buttons when sections are toggled (in case content is dynamic)
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.section-header')) {
+                setTimeout(addExportButtons, 100);
+            }
+        });
+
+        // Scroll to top button
+        const scrollBtn = document.createElement('button');
+        scrollBtn.innerHTML = '↑';
+        scrollBtn.style.cssText = `
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            pointer-events: none;
+        `;
+        document.body.appendChild(scrollBtn);
+
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                scrollBtn.style.opacity = '1';
+                scrollBtn.style.pointerEvents = 'auto';
+            } else {
+                scrollBtn.style.opacity = '0';
+                scrollBtn.style.pointerEvents = 'none';
+            }
+        });
+
+        scrollBtn.addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        scrollBtn.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.5)';
+        });
+
+        scrollBtn.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)';
+        });
+
+        // Smooth scroll for section headers
+        document.querySelectorAll('.section-header').forEach(header => {
+            header.addEventListener('click', function() {
+                setTimeout(() => {
+                    this.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            });
+        });
+
+        // Add loading animation for sections
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.section-container').forEach((section, index) => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(30px)';
+            section.style.transition = `all 0.6s ease-out ${index * 0.1}s`;
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>

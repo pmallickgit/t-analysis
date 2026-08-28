@@ -1,0 +1,232 @@
+╔════════════════════════════════════════════════════════════════════╗
+║      BUNDLE SCRIPT ANALYSIS WORKFLOW - FILE INDEX                 ║
+╚════════════════════════════════════════════════════════════════════╝
+
+LOCATION: /Users/pmallick/Downloads/old_mac/analysis_data/skills_desk/t-analysis/
+
+════════════════════════════════════════════════════════════════════
+MAIN SCRIPTS (Executable)
+════════════════════════════════════════════════════════════════════
+
+✓ run-bundle-scripts.sh
+  - Main script that executes analysis scripts from bundles
+  - Discovers scripts in var/log/scripts/ of each bundle
+  - Runs base analysis scripts from scripts/ directory
+  - Generates per-bundle analysis reports
+  - Usage: bash run-bundle-scripts.sh <TICKET_ID>
+
+✓ generate-bundle-analysis-report.sh
+  - Creates beautiful HTML report from analysis results
+  - Generates interactive web-based report with statistics
+  - Includes table of contents and bundle navigation
+  - Usage: bash generate-bundle-analysis-report.sh <TICKET_ID>
+
+✓ analyze-complete-bundle.sh
+  - Master orchestration script for complete workflow
+  - Runs all steps in sequence: extract → analyze → report
+  - Generates workflow logs and summary
+  - Usage: bash analyze-complete-bundle.sh <TICKET_ID>
+
+✓ extract-bundle-errors.sh
+  - Utility script for extracting errors from bundles
+  - Part of the workflow, called by analyze-complete-bundle.sh
+  - Can also be run standalone for error extraction only
+
+════════════════════════════════════════════════════════════════════
+DOCUMENTATION FILES
+════════════════════════════════════════════════════════════════════
+
+📖 BUNDLE_ANALYSIS_README.md
+  - Comprehensive documentation
+  - Workflow explanation and examples
+  - Directory structure reference
+  - Customization and troubleshooting guide
+  - Start here for detailed information
+
+🎯 QUICK_START.sh
+  - Quick reference guide with copy-paste commands
+  - All usage options and examples
+  - Output locations and viewing instructions
+  - Troubleshooting tips
+
+📋 SETUP_SUMMARY.md
+  - Overview of all created resources
+  - Feature summary and data flow diagram
+  - Integration notes and customization guide
+  - Performance considerations
+
+📝 INDEX.txt
+  - This file - directory of all resources
+
+════════════════════════════════════════════════════════════════════
+SUPPORTING SCRIPTS (Already Present)
+════════════════════════════════════════════════════════════════════
+
+✓ jira_access.sh
+  - JIRA access utilities
+  - Supports ticket operations
+
+✓ jira_extract_case_path.sh
+  - Extract case paths from JIRA tickets
+
+✓ support_bundle_download.sh
+  - Download support bundles
+
+✓ run_ticket_analysis.sh
+  - Ticket analysis runner
+
+✓ extract_and_analyze.sh
+  - Combined extraction and analysis
+
+✓ generate-per-bundle-analysis.sh
+  - Per-bundle analysis generation
+
+════════════════════════════════════════════════════════════════════
+QUICK START COMMANDS
+════════════════════════════════════════════════════════════════════
+
+# Complete workflow (Extract, Run, Report)
+cd /Users/pmallick/Downloads/old_mac/analysis_data/skills_desk/t-analysis
+bash analyze-complete-bundle.sh NIOSSPT-XXXXX
+
+# Skip extraction if already extracted
+bash analyze-complete-bundle.sh NIOSSPT-XXXXX --skip-extraction
+
+# Just run scripts
+bash run-bundle-scripts.sh NIOSSPT-XXXXX
+
+# Generate report only
+bash generate-bundle-analysis-report.sh NIOSSPT-XXXXX
+
+# View results
+open ~/analysis_support_tickets/NIOSSPT-XXXXX/generated/comprehensive_bundle_analysis.html
+cat ~/analysis_support_tickets/NIOSSPT-XXXXX/generated/bundle_scripts_summary.txt
+
+════════════════════════════════════════════════════════════════════
+OUTPUT LOCATIONS
+════════════════════════════════════════════════════════════════════
+
+Ticket Directory:
+  ~/analysis_support_tickets/<TICKET_ID>/
+
+Generated Files:
+  ~/analysis_support_tickets/<TICKET_ID>/generated/
+
+Bundle Analysis:
+  ~/analysis_support_tickets/<TICKET_ID>/generated/bundle_script_analysis/
+
+HTML Report:
+  ~/analysis_support_tickets/<TICKET_ID>/generated/comprehensive_bundle_analysis.html
+
+Summary:
+  ~/analysis_support_tickets/<TICKET_ID>/generated/bundle_scripts_summary.txt
+
+Workflow Log:
+  ~/analysis_support_tickets/<TICKET_ID>/analysis_workflow.log
+
+════════════════════════════════════════════════════════════════════
+WORKFLOW OVERVIEW
+════════════════════════════════════════════════════════════════════
+
+STEP 1: Extract (Optional)
+  Source: Support bundle files
+  Output: Extracted bundle directories
+
+STEP 2: Run Scripts
+  Source: var/log/scripts/ in each bundle + base scripts/
+  Process: Execute scripts, capture output
+  Output: bundle_script_analysis/ with results
+
+STEP 3: Generate Report
+  Source: Collected script outputs
+  Process: Create HTML report with statistics
+  Output: comprehensive_bundle_analysis.html
+
+════════════════════════════════════════════════════════════════════
+FEATURE SUMMARY
+════════════════════════════════════════════════════════════════════
+
+✅ Automatic Script Discovery
+   - Finds scripts in bundle directories automatically
+   - Executes both embedded and base analysis scripts
+
+✅ Context Passing
+   - Scripts receive environment variables:
+     * $VAR_LOG - Path to bundle's var/log
+     * $BUNDLE_DIR - Path to bundle
+     * $BUNDLE_NAME - Name of bundle
+
+✅ Comprehensive Reporting
+   - Per-bundle analysis summaries
+   - Overall statistics and metrics
+   - Interactive HTML dashboard
+   - Complete workflow logs
+
+✅ Extensible
+   - Add custom analysis scripts to scripts/ directory
+   - Automatically executed with bundle context
+   - Results included in reports
+
+✅ Error Tolerant
+   - Continues on script failures
+   - Logs all errors for review
+   - No destructive operations
+
+════════════════════════════════════════════════════════════════════
+DOCUMENTATION READING ORDER
+════════════════════════════════════════════════════════════════════
+
+1. THIS FILE (INDEX.txt)
+   - Get overview of all resources
+
+2. QUICK_START.sh
+   - Copy-paste commands to get started quickly
+
+3. BUNDLE_ANALYSIS_README.md
+   - Read full documentation when you have time
+
+4. SETUP_SUMMARY.md
+   - Understand features, architecture, and customization
+
+════════════════════════════════════════════════════════════════════
+EXAMPLE USAGE
+════════════════════════════════════════════════════════════════════
+
+# Analyze a ticket
+cd /Users/pmallick/Downloads/old_mac/analysis_data/skills_desk/t-analysis
+bash analyze-complete-bundle.sh NIOSSPT-XXXXX
+open ~/analysis_support_tickets/NIOSSPT-XXXXX/generated/comprehensive_bundle_analysis.html
+
+# Analyze an already extracted ticket
+bash analyze-complete-bundle.sh NIOSSPT-YYYYY --skip-extraction
+cat ~/analysis_support_tickets/NIOSSPT-YYYYY/generated/bundle_scripts_summary.txt
+
+# Just run scripts and generate report separately
+bash run-bundle-scripts.sh NIOSSPT-XXXXX
+bash generate-bundle-analysis-report.sh NIOSSPT-XXXXX
+
+════════════════════════════════════════════════════════════════════
+SUPPORT & TROUBLESHOOTING
+════════════════════════════════════════════════════════════════════
+
+Q: How do I get started?
+A: Run: bash analyze-complete-bundle.sh NIOSSPT-XXXXX
+
+Q: Scripts not executable?
+A: Run: chmod +x *.sh in t-analysis directory
+
+Q: No output generated?
+A: Check: cat ~/analysis_support_tickets/<TICKET_ID>/analysis_workflow.log
+
+Q: Want to add custom analysis?
+A: Add scripts to scripts/ directory, they'll be auto-executed
+
+Q: Need more help?
+A: Read BUNDLE_ANALYSIS_README.md for comprehensive guide
+
+════════════════════════════════════════════════════════════════════
+STATUS: ✅ All scripts created and ready to use
+════════════════════════════════════════════════════════════════════
+
+Date Created: May 18, 2026
+Location: /Users/pmallick/Downloads/old_mac/analysis_data/skills_desk/t-analysis/
